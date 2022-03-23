@@ -5,6 +5,8 @@ import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import CardMedia from "@mui/material/CardMedia";
+import { Link } from "@mui/material";
+
 function CardItem(props) {
   const img = props.img;
   const profile = props.profile;
@@ -14,7 +16,7 @@ function CardItem(props) {
   const post = props.post;
   return (
     <Card sx={{ width: 500 }}>
-      <CardMedia component='img' height='250' image={img} alt='Paella dish' />
+      <CardMedia component="img" height="250" image={img} alt="Paella dish" />
 
       <Box sx={{ width: 500 }}>
         <Box
@@ -33,22 +35,23 @@ function CardItem(props) {
               justifyContent: "center",
               alignItems: "center",
               marginLeft: 2,
+              py: 2,
             }}
           >
             <img
               src={profile}
-              alt='BigCo Inc. logo'
+              alt="BigCo Inc. logo"
               style={{
                 width: 40,
                 height: 40,
                 borderRadius: "100%",
               }}
             />
-            <p style={{ padding: 10 }}>
+            <Link href="/profile" sx={{ p: "10px" }}>
               {fname} {lname}
-            </p>
+            </Link>
           </Box>
-          <Box
+          {/* <Box
             sx={{
               display: "flex",
               flexDirection: "row",
@@ -59,13 +62,13 @@ function CardItem(props) {
           >
             <p style={{ padding: 10 }}>{likeNumber}</p>
             <FavoriteIcon />
-          </Box>
+          </Box> */}
         </Box>
       </Box>
       <Box>
         <Typography
-          variant='body2'
-          color='text.secondary'
+          variant="body2"
+          color="text.secondary"
           style={{ paddingLeft: 50, marginBottom: 20, marginRight: 15 }}
         >
           {post}
