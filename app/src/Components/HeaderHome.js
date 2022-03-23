@@ -31,7 +31,7 @@ function HeaderHome() {
         }}
       >
         <Link
-          to='/profile'
+          to="/profile"
           style={{
             position: "absolute",
             height: 30,
@@ -49,7 +49,18 @@ function HeaderHome() {
             onClick={handleBack}
           />
         </Link>
-        <p style={{ fontWeight: "bold", fontSize: 25 }}>Banner</p>
+        <Link
+          to="/home"
+          underline="none"
+          style={{
+            fontWeight: "bold",
+            fontSize: 25,
+            textDecoration: "none",
+            color: "black",
+          }}
+        >
+          {"Banner"}
+        </Link>
       </Box>
     </Box>
   );
