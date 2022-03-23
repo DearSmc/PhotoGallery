@@ -18,8 +18,8 @@ function UploadPost(props) {
     <Modal
       open={open}
       // onClose={handleClose}
-      aria-labelledby='modal-modal-title'
-      aria-describedby='modal-modal-description'
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
     >
       <Box
         sx={{
@@ -51,9 +51,9 @@ function UploadPost(props) {
           }}
         >
           <TextField
-            label='Write a caption'
+            label="Write a caption"
             multiline
-            defaultValue=''
+            defaultValue=""
             rows={4}
             sx={{ width: 600 }}
             value={post}

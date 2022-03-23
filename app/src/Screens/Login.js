@@ -15,32 +15,24 @@ import CloseIcon from "@mui/icons-material/Close";
 import Alert from "@mui/material/Alert";
 import Collapse from "@mui/material/Collapse";
 import Snackbar from "@mui/material/Snackbar";
-import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternateOutlined";
-import Icon from "@mui/material";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import SwitchAccountIcon from "@mui/icons-material/SwitchAccount";
-import Tooltip from "@mui/material/Tooltip";
+
 import { red, blue } from "@mui/material/colors";
+
 import { useNavigate } from "react-router-dom";
 
-export default function Signup() {
+export default function Login() {
   const navigate = useNavigate();
 
   const [values, setValues] = useState({
-    Fname: "",
-    Lname: "",
     email: "",
     password: "",
     showPassword: false,
   });
-
-  const [image, setImage] = useState("");
-
   const [alert, setAlert] = useState(false);
-  const [errMSG, setErrMSG] = useState([]);
 
   const handleChange = (prop) => (event) => {
     setValues({ ...values, [prop]: event.target.value });
+    console.log("in");
   };
 
   const handleClickShowPassword = () => {
@@ -54,54 +46,21 @@ export default function Signup() {
     event.preventDefault();
   };
 
-  function clearErrMessage() {
-    // console.log("Last error", errMSG);
-    errMSG.length = 0;
-  }
-
-  const handleLogin = async () => {
-    let isCorrect = await validate();
-    if (isCorrect) {
-      console.log("call sign up function");
-      navigate("/login");
+  const handleLogin = () => {
+    if (validate()) {
+      console.log("call login function");
+      navigate("/home");
     } else {
-      console.log("check it again", errMSG);
+      console.log("check it again");
       setAlert(true);
     }
   };
 
   function validate() {
-    clearErrMessage();
-    let imageValid = image !== "";
-    let emailValid =
-      values.email.length > 0 &&
-      values.email.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
+    let emailValid = values.email.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
     let passwordValid = values.password.length > 4;
-    let FnameValid = values.Fname.length > 0;
-    let LnameValid = values.Lname.length > 0;
-
-    if (!imageValid) errMSG.push("please upload your profile image");
-    if (!FnameValid) errMSG.push("please fill your First name");
-    if (!LnameValid) errMSG.push("please fill your Last name");
-    if (!emailValid)
-      errMSG.push("your fill your email in format email@something.xx");
-    if (!passwordValid)
-      errMSG.push("your password must have more than 4 letter");
-
-    return (
-      imageValid && emailValid && passwordValid && FnameValid && LnameValid
-    );
+    return emailValid && passwordValid;
   }
-
-  const imageHandler = (e) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (reader.readyState === 2) {
-        setImage(reader.result);
-      }
-    };
-    reader.readAsDataURL(e.target.files[0]);
-  };
 
   return (
     <div>
@@ -119,7 +78,7 @@ export default function Signup() {
           severity="error"
           sx={{ width: "100%" }}
         >
-          {errMSG[0]}
+          Please check your email and password
         </Alert>
       </Snackbar>
       <Box
@@ -133,7 +92,8 @@ export default function Signup() {
         }}
       >
         <img
-          src="https://images.pexels.com/photos/443446/pexels-photo-443446.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+          src="https://images.pexels.com/photos/1287145/pexels-photo-1287145.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260"
+          alt="welcome"
           style={{ height: "100vh", objectFit: "cover" }}
         />
         <Box
@@ -147,8 +107,8 @@ export default function Signup() {
             backgroundColor: "white",
           }}
         >
-          <Typography variant="h3" component="div" sx={{ mt: 8, mb: 5 }}>
-            Sign Up
+          <Typography variant="h3" component="div" sx={{ mt: 8, mb: 10 }}>
+            Login
           </Typography>
           <Box
             component="form"
@@ -162,56 +122,6 @@ export default function Signup() {
             noValidate
             autoComplete="off"
           >
-            <Button variant="contained" component="label" sx={{ mb: 3 }}>
-              Upload Profile Image <SwitchAccountIcon sx={{ ml: 1 }} />
-              <input
-                type="file"
-                id="image-upload"
-                accept="image/*"
-                style={{ display: "none", visibility: "none" }}
-                onChange={imageHandler}
-                hidden
-              />
-            </Button>
-
-            <Box
-              sx={{
-                mb: 3,
-              }}
-            >
-              <InputLabel htmlFor="standard-adornment-Fname">
-                First name
-              </InputLabel>
-              <Input
-                type="text"
-                label="First name"
-                variant="standard"
-                color="primary"
-                placeholder="Input your First name"
-                value={values.Fname}
-                onChange={handleChange("Fname")}
-                fullWidth
-              />
-            </Box>
-            <Box
-              sx={{
-                mb: 3,
-              }}
-            >
-              <InputLabel htmlFor="standard-adornment-Lname">
-                Last name
-              </InputLabel>
-              <Input
-                type="text"
-                label="Last name"
-                variant="standard"
-                color="primary"
-                placeholder="Input your Last name"
-                value={values.Lname}
-                onChange={handleChange("Lname")}
-                fullWidth
-              />
-            </Box>
             <Box
               sx={{
                 mb: 3,
@@ -260,7 +170,7 @@ export default function Signup() {
               />
             </Box>
             <Button variant="contained" sx={{ mb: 4 }} onClick={handleLogin}>
-              Create an account
+              LOGIN
             </Button>
 
             {/* <Box
@@ -272,7 +182,7 @@ export default function Signup() {
               }}
             >
               <Typography variant="subtitle1" component="div">
-                Create an account with
+                Login with
               </Typography>
 
               <Box sx={{ m: 1 }} fullWidth>
@@ -285,15 +195,15 @@ export default function Signup() {
             </Box> */}
 
             <Typography variant="caption" sx={{ textAlign: "center" }}>
-              Have an account?{" "}
+              don’t have an account?{" "}
               <Link
                 component="button"
                 variant="body2"
                 onClick={() => {
-                  navigate("/login");
+                  navigate("/signup");
                 }}
               >
-                LOGIN
+                SIGN UP
               </Link>
             </Typography>
           </Box>

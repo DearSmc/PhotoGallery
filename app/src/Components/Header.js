@@ -2,9 +2,14 @@ import React from "react";
 import Box from "@mui/material/Box";
 import { Link } from "react-router-dom";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
+import LogoutIcon from "@mui/icons-material/Logout";
 function Header() {
   const handleBack = () => {
     console.log("Back");
+  };
+
+  const handleLogout = () => {
+    console.log("Logout!!");
   };
 
   return (
@@ -32,7 +37,7 @@ function Header() {
         }}
       >
         <Link
-          to='/'
+          to="/home"
           style={{
             position: "absolute",
             height: 30,
@@ -50,7 +55,37 @@ function Header() {
             onClick={handleBack}
           />
         </Link>
-        <p style={{ fontWeight: "bold", fontSize: 25 }}>Banner</p>
+        <Link
+          to="/home"
+          underline="none"
+          style={{
+            fontWeight: "bold",
+            fontSize: 25,
+            textDecoration: "none",
+            color: "black",
+          }}
+        >
+          {"Banner"}
+        </Link>
+        <Link
+          to="/login"
+          style={{
+            position: "absolute",
+            height: 30,
+            width: 30,
+            right: 10,
+            textDecoration: "none",
+            color: "black",
+          }}
+        >
+          <LogoutIcon
+            sx={{
+              height: 30,
+              width: 30,
+            }}
+            onClick={handleLogout}
+          />
+        </Link>
       </Box>
     </Box>
   );
