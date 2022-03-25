@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
 import Box from "@mui/material/Box";
@@ -19,8 +19,11 @@ import Snackbar from "@mui/material/Snackbar";
 import { red, blue } from "@mui/material/colors";
 
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { UserContext } from "../Contexts/UserContext";
 
 export default function Login() {
+  const { setUser } = useContext(UserContext);
   const navigate = useNavigate();
 
   const [values, setValues] = useState({
@@ -32,7 +35,6 @@ export default function Login() {
 
   const handleChange = (prop) => (event) => {
     setValues({ ...values, [prop]: event.target.value });
-    console.log("in");
   };
 
   const handleClickShowPassword = () => {
@@ -48,8 +50,34 @@ export default function Login() {
 
   const handleLogin = () => {
     if (validate()) {
-      console.log("call login function");
-      navigate("/home");
+      const { email, password } = values;
+      const payload = {
+        email,
+        password,
+      };
+      axios
+        .post(`${process.env.REACT_APP_API_URL}/users/login`, payload)
+        .then((res) => {
+          const accessToken = res.data.access_token;
+          localStorage.setItem("accessToken", accessToken);
+          axios
+            .get(`${process.env.REACT_APP_API_URL}/users/session`, {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            })
+            .then((res) => {
+              const { userId, firstName, lastName, email, photo } = res.data;
+              setUser({ userId, firstName, lastName, email, photo });
+              navigate("/home");
+            })
+            .catch((err) => {
+              console.log("Cannot get session");
+            });
+        })
+        .catch(() => {
+          setAlert(true);
+        });
     } else {
       console.log("check it again");
       setAlert(true);

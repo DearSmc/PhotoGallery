@@ -9,7 +9,7 @@ function Header() {
   };
 
   const handleLogout = () => {
-    console.log("Logout!!");
+    localStorage.removeItem("accessToken");
   };
 
   return (

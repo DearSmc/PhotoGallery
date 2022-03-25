@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useContext } from "react";
 import Box from "@mui/material/Box";
 import HomeIcon from "@mui/icons-material/Home";
 import { Link } from "react-router-dom";
-function HeaderHome() {
-  const handleBack = () => {
-    console.log("Go");
-  };
+import { UserContext } from "../Contexts/UserContext";
+function HeaderHome(props) {
+  const { userId } = props;
+  const handleBack = () => {};
   return (
     <Box
       sx={{
@@ -31,7 +31,7 @@ function HeaderHome() {
         }}
       >
         <Link
-          to="/profile"
+          to={`/profile/${userId}`}
           style={{
             position: "absolute",
             height: 30,

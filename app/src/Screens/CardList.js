@@ -1,7 +1,25 @@
 import Box from "@mui/material/Box";
 import HeaderHome from "../Components/HeaderHome";
 import CardItem from "../Components/CardItem";
+import { useContext, useEffect, useState } from "react";
+import { UserContext } from "../Contexts/UserContext";
+import axios from "axios";
 function CardList() {
+  const { user } = useContext(UserContext);
+  const [posts, setPosts] = useState([]);
+  const [didFetchPosts, setDidFetchPosts] = useState(false);
+  useEffect(() => {
+    if (!didFetchPosts) {
+      fetchPosts();
+    }
+  }, [didFetchPosts]);
+
+  const fetchPosts = () => {
+    axios.get(`${process.env.REACT_APP_API_URL}/posts`).then((res) => {
+      setPosts(res.data);
+      setDidFetchPosts(true);
+    });
+  };
   return (
     <Box
       sx={{
@@ -14,18 +32,15 @@ function CardList() {
         marginBottom: 5,
       }}
     >
-      <HeaderHome />
+      <HeaderHome userId={user.userId} />
       <Box style={{ height: 200, marginTop: 60 }}>
-        {itemData.map((item) => (
-          <CardItem
-            img={item.img}
-            profile={item.profile}
-            fname={item.fname}
-            lname={item.lname}
-            likeNumber={item.likeNumber}
-            post={item.post}
-          />
-        ))}
+        {posts
+          ? posts.map((p) => {
+              if (p.author === null) return null;
+              const { author, ...post } = p;
+              return <CardItem author={author} post={post} />;
+            })
+          : null}
       </Box>
     </Box>
   );

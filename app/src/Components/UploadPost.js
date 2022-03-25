@@ -3,13 +3,53 @@ import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import UploadIcon from "./UploadIcon";
+import axios from "axios";
 
 function UploadPost(props) {
-  const handleClose = () => setOpen(false);
-  const newImage = props.newImage;
-  const open = props.open;
-  const setOpen = props.setOpen;
   const [post, setPost] = useState();
+  const { newImage, open, setOpen, file } = props;
+
+  const handleClose = () => {
+    // upload photo and description to server
+    const formData = new FormData();
+    formData.append("file", file);
+    axios({
+      method: "post",
+      url: `${process.env.REACT_APP_API_URL}/posts/photo/upload`,
+      data: formData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    })
+      .then((res) => {
+        const absoluteStorageDir = res.data.path.slice(5);
+        const postImageDestination = res.data.destination
+          ? `${process.env.REACT_APP_API_URL}/${absoluteStorageDir}`
+          : null;
+
+        const payload = {
+          photo: postImageDestination ? postImageDestination : null,
+          description: post,
+        };
+
+        axios
+          .post(`${process.env.REACT_APP_API_URL}/posts`, payload, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            },
+          })
+          .then((res) => {
+            setOpen(false);
+          })
+          .catch((err) => {
+            alert("Cannot create post");
+          });
+      })
+      .catch((err) => {
+        alert("Cannot upload post image");
+      });
+  };
+
   const handleChange = (e) => {
     setPost(e.target.value);
   };
@@ -57,7 +97,7 @@ function UploadPost(props) {
             rows={4}
             sx={{ width: 600 }}
             value={post}
-            handleChange={handleChange}
+            onChange={handleChange}
           />
         </Box>
         <UploadIcon handleClose={handleClose} />

@@ -9,19 +9,11 @@ import InputAdornment from "@mui/material/InputAdornment";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import Button from "@mui/material/Button";
-import GoogleIcon from "@mui/icons-material/Google";
-import FacebookIcon from "@mui/icons-material/Facebook";
-import CloseIcon from "@mui/icons-material/Close";
 import Alert from "@mui/material/Alert";
-import Collapse from "@mui/material/Collapse";
 import Snackbar from "@mui/material/Snackbar";
-import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternateOutlined";
-import Icon from "@mui/material";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import SwitchAccountIcon from "@mui/icons-material/SwitchAccount";
-import Tooltip from "@mui/material/Tooltip";
-import { red, blue } from "@mui/material/colors";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -34,7 +26,7 @@ export default function Signup() {
     showPassword: false,
   });
 
-  const [image, setImage] = useState("");
+  const [image, setImage] = useState(null);
 
   const [alert, setAlert] = useState(false);
   const [errMSG, setErrMSG] = useState([]);
@@ -55,19 +47,50 @@ export default function Signup() {
   };
 
   function clearErrMessage() {
-    // console.log("Last error", errMSG);
     errMSG.length = 0;
   }
 
   const handleLogin = async () => {
     let isCorrect = await validate();
-    if (isCorrect) {
-      console.log("call sign up function");
-      navigate("/login");
-    } else {
-      console.log("check it again", errMSG);
+    if (!isCorrect) {
       setAlert(true);
     }
+
+    const formData = new FormData();
+    formData.append("file", image);
+    axios({
+      method: "post",
+      url: `${process.env.REACT_APP_API_URL}/users/photo/upload`,
+      data: formData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    })
+      .then((res) => {
+        const absoluteStorageDir = res.data.path.slice(5);
+        const profileDestination = res.data.destination
+          ? `${process.env.REACT_APP_API_URL}/${absoluteStorageDir}`
+          : null;
+        const { Fname: firstName, Lname: lastName, email, password } = values;
+        const payload = {
+          firstName,
+          lastName,
+          email,
+          password,
+          photo: profileDestination ? profileDestination : null,
+        };
+        axios
+          .post(`${process.env.REACT_APP_API_URL}/users`, payload)
+          .then((res) => {
+            navigate("/login");
+          })
+          .catch((err) => {
+            alert("Cannot sign up");
+          });
+      })
+      .catch((err) => {
+        alert("Cannot upload profile image");
+      });
   };
 
   function validate() {
@@ -93,14 +116,8 @@ export default function Signup() {
     );
   }
 
-  const imageHandler = (e) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (reader.readyState === 2) {
-        setImage(reader.result);
-      }
-    };
-    reader.readAsDataURL(e.target.files[0]);
+  const imageHandler = (event) => {
+    setImage(event.target.files[0]);
   };
 
   return (
@@ -167,7 +184,6 @@ export default function Signup() {
               <input
                 type="file"
                 id="image-upload"
-                accept="image/*"
                 style={{ display: "none", visibility: "none" }}
                 onChange={imageHandler}
                 hidden

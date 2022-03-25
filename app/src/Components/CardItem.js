@@ -8,16 +8,12 @@ import CardMedia from "@mui/material/CardMedia";
 import { Link } from "@mui/material";
 
 function CardItem(props) {
-  const img = props.img;
-  const profile = props.profile;
-  const fname = props.fname;
-  const lname = props.lname;
-  const likeNumber = props.likeNumber;
-  const post = props.post;
+  const { author, post } = props;
+  const { firstName, lastName, photo: authorPhoto, userId } = author;
+  const { description, photo, slug } = post;
   return (
     <Card sx={{ width: 500 }}>
-      <CardMedia component="img" height="250" image={img} alt="Paella dish" />
-
+      <CardMedia component="img" height="250" image={photo} alt={slug} />
       <Box sx={{ width: 500 }}>
         <Box
           sx={{
@@ -39,7 +35,7 @@ function CardItem(props) {
             }}
           >
             <img
-              src={profile}
+              src={authorPhoto}
               alt="BigCo Inc. logo"
               style={{
                 width: 40,
@@ -47,8 +43,8 @@ function CardItem(props) {
                 borderRadius: "100%",
               }}
             />
-            <Link href="/profile" sx={{ p: "10px" }}>
-              {fname} {lname}
+            <Link href={`profile/${userId}`} sx={{ p: "10px" }}>
+              {firstName} {lastName}
             </Link>
           </Box>
           {/* <Box
@@ -71,7 +67,7 @@ function CardItem(props) {
           color="text.secondary"
           style={{ paddingLeft: 50, marginBottom: 20, marginRight: 15 }}
         >
-          {post}
+          {description}
         </Typography>
       </Box>
     </Card>

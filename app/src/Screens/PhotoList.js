@@ -1,24 +1,60 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import ImageList from "@mui/material/ImageList";
 import ImageListItem from "@mui/material/ImageListItem";
 import AddIcon from "../Components/AddIcon";
 import Header from "../Components/Header";
 import UploadPost from "../Components/UploadPost";
+import { UserContext } from "../Contexts/UserContext";
+import axios from "axios";
+import { useParams } from "react-router-dom";
 
 function PhotoList() {
   const [newImage, setNewImage] = useState("");
+  const [file, setFile] = useState(null);
+
+  const [posts, setPosts] = useState([]);
+  const [user, setUser] = useState({
+    userId: -1,
+    firstName: "",
+    lastName: "",
+    email: "",
+    photo: "",
+  });
+  const [didFetchPosts, setDidFetchPosts] = useState(false);
+
+  const { id: userId } = useParams("id");
+
+  useEffect(() => {
+    if (!didFetchPosts) {
+      fetchPosts();
+    }
+  }, [didFetchPosts]);
+
+  const fetchPosts = () => {
+    axios
+      .get(`${process.env.REACT_APP_API_URL}/users/${userId}`)
+      .then((res) => {
+        const { posts, ...user } = res.data;
+        setPosts(posts);
+        setUser(user);
+        setDidFetchPosts(true);
+      });
+  };
 
   const imageHandler = (e) => {
     const reader = new FileReader();
     reader.onload = () => {
       if (reader.readyState === 2) {
+        setFile(e.target.files[0]);
         setNewImage(reader.result);
       }
     };
     reader.readAsDataURL(e.target.files[0]);
     setOpen(true);
   };
+
+  // set new image using fileReader
 
   const [open, setOpen] = React.useState(false);
 
@@ -47,10 +83,8 @@ function PhotoList() {
         }}
       >
         <img
-          src={
-            "https://cbsnews1.cbsistatic.com/hub/i/2018/11/06/0c1af1b8-155a-458e-b105-78f1e7344bf4/2018-11-06t054310z-1334124005-rc1be15a8050-rtrmadp-3-people-sexiest-man.jpg"
-          }
-          alt='BigCo Inc. logo'
+          src={user.photo}
+          alt={user.firstName}
           style={{
             width: 80,
             height: 80,
@@ -67,36 +101,40 @@ function PhotoList() {
           }}
         >
           <p style={{ fontWeight: "bold", fontSize: 20 }}>
-            Thanakorn Chancherngpanich
+            {user.firstName} {user.lastName}
           </p>
         </Box>
       </Box>
       <Box sx={{ height: 540, position: "relative" }}>
         <ImageList sx={{ width: 500, height: "100%" }} cols={3} rowHeight={164}>
-          {itemData.map((item) => (
-            <ImageListItem key={item.img}>
+          {posts.map((post) => (
+            <ImageListItem key={post.id}>
               <img
-                src={`${item.img}?w=164&h=164&fit=crop&auto=format`}
-                srcSet={`${item.img}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-                alt={item.title}
-                loading='lazy'
+                src={post.photo}
+                alt={post.description.slice(0, 4)}
+                loading="lazy"
               />
             </ImageListItem>
           ))}
         </ImageList>
 
-        <label htmlFor='image-upload'>
+        <label htmlFor="image-upload">
           <AddIcon />
         </label>
         <input
-          type='file'
-          id='image-upload'
-          accept='image/*'
+          type="file"
+          id="image-upload"
+          accept="image/*"
           style={{ display: "none", visibility: "none" }}
           onChange={imageHandler}
         />
       </Box>
-      <UploadPost newImage={newImage} open={open} setOpen={setOpen} />
+      <UploadPost
+        newImage={newImage}
+        open={open}
+        setOpen={setOpen}
+        file={file}
+      />
     </Box>
   );
 }
